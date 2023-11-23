@@ -127,15 +127,19 @@ def main(tot_rows):
             snake.limbs.append([snake.limbs[-1][0], snake.limbs[-1][1]])
             apple = Apple(grid)
 
-        pg.time.wait(40)
+        pg.time.wait(70)
 
-        pg.display.update()
+        if pg.display.get_init():
+            pg.display.update()
+        
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                run = False
-    pg.quit()
+                pg.quit()
 
 if "__main__" == __name__:
     run = True
     while run:
-        main(25)
+        try:
+            main(25)
+        except pg.error:
+            run = False
