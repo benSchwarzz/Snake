@@ -9,7 +9,7 @@ SCREEN = pg.display.set_mode((WIDTH, WIDTH))
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 235, 140)
-RED = (235, 180, 80)
+RED = (255, 80, 40)
 
 class Node:
 	def __init__(self, x, y, row, col, tot_rows):
@@ -48,8 +48,6 @@ class Snake:
         self.head = self.limbs[0]
 
     def move(self, grid, tot_rows, up, down, left, right):
-        if self.head[0] < 0 or self.head[0] == tot_rows+1 or self.head[1] < 0 or self.head[1] == tot_rows+1:
-            return
 
         for limb in self.limbs:
             grid[limb[0]][limb[1]].make_player()
@@ -115,17 +113,15 @@ def draw_grid(grid):
 def main(tot_rows):
     grid = make_grid(tot_rows)
     apple = Apple(grid)
-    snake = Snake(20, 25)
+    snake = Snake(20, 20)
     run = True
 
     while run:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                run = False
-        
         draw_grid(grid)
         apple.draw(grid)
         snake.move(grid, 30, pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT)
+        if snake.head[0] < 0 or snake.head[0] == tot_rows+1 or snake.head[1] < 0 or snake.head[1] == tot_rows+1:
+            run = False
 
         if snake.head == [apple.row, apple.col]:
             snake.limbs.append([snake.limbs[-1][0], snake.limbs[-1][1]])
@@ -134,8 +130,12 @@ def main(tot_rows):
         pg.time.wait(40)
 
         pg.display.update()
-
-
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                run = False
     pg.quit()
 
-main(30)
+if "__main__" == __name__:
+    run = True
+    while run:
+        main(25)
