@@ -12,6 +12,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 235, 140)
 RED = (255, 80, 40)
+RED2 = (255, 0, 0)
 
 class Node:
 	def __init__(self, x, y, row, col, tot_rows):
@@ -90,16 +91,16 @@ class Apple:
         grid[self.row][self.col].make_apple()
 
 class Info_bar:
-    def __init__(self, x, y, color, count, user = "Guest"):
+    def __init__(self, x, y, color, user = "Guest"):
         self.color = color
         self.x = x
         self.y = y
-        self.count = count
         self.user = user
         self.box = pg.Rect(self.x, self.y, WIDTH, WIDTH-self.y)
     
-    def draw(self):
+    def draw(self, length):
         pg.draw.rect(SCREEN, self.color, (self.box))
+        font.render_to(SCREEN, (self.x+4, self.y+4), f"Hello {self.user}", BLACK)
     
         
 
@@ -115,7 +116,7 @@ def make_grid(tot_rows):
             grid[row].append(node)
     return grid
 
-        
+
 def draw_grid(grid):
     for row in grid:
         for node in row:
@@ -130,7 +131,7 @@ def main(tot_rows, user = "Guest"):
     length = 3
     old_time = pg.time.get_ticks()
 
-    info_div = Info_bar(0, WIDTH-(WIDTH//tot_rows), WHITE, length, user)
+    info_div = Info_bar(0, WIDTH-(WIDTH//tot_rows), WHITE, user)
 
     run = True
 
@@ -144,7 +145,13 @@ def main(tot_rows, user = "Guest"):
             snake.move(pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT)
 
         if snake.head[0] < 0 or snake.head[0] == tot_rows-1 or snake.head[1] < 0 or snake.head[1] == tot_rows:
+            pg.time.wait(2000)
             run = False
+        else:
+             for limb in range(1, len(snake.limbs)):
+                  if snake.head == [snake.limbs[limb][0], snake.limbs[limb][1]]:
+                       pg.time.wait(2000)
+                       run = False
         
         snake.draw(grid)
 
@@ -154,7 +161,7 @@ def main(tot_rows, user = "Guest"):
             length += 1
         
         font.render_to(SCREEN, (10, 10), f"Length: {length}", WHITE)
-        info_div.draw()
+        info_div.draw(length)
 
         if pg.display.get_init():
             pg.display.update()
