@@ -1,10 +1,12 @@
 import pygame as pg
+import pygame.freetype
 import copy, random
 
 pg.init()
 
 WIDTH = 600
 SCREEN = pg.display.set_mode((WIDTH, WIDTH))
+font = pygame.freetype.Font(None, 20)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -37,7 +39,6 @@ class Node:
 	def reset(self):
 		self.color = BLACK
 
-
 class Snake:
     def __init__(self, row, col):
         self.row = row
@@ -47,11 +48,11 @@ class Snake:
         self.length = len(self.limbs)
         self.head = self.limbs[0]
 
-    def move(self, grid, tot_rows, up, down, left, right):
-
-        for limb in self.limbs:
+    def draw(self, grid):
+         for limb in self.limbs:
             grid[limb[0]][limb[1]].make_player()
-           
+
+    def move(self, up, down, left, right):
 
         keys = pg.key.get_pressed()
 
@@ -87,13 +88,26 @@ class Apple:
     
     def draw(self, grid):
         grid[self.row][self.col].make_apple()
+
+class Info_bar:
+    def __init__(self, x, y, color, count, user = "Guest"):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.count = count
+        self.user = user
+        self.box = pg.Rect(self.x, self.y, WIDTH, WIDTH-self.y)
+    
+    def draw(self):
+        pg.draw.rect(SCREEN, self.color, (self.box))
+    
         
 
 
 def make_grid(tot_rows):
     grid = []
 
-    for row in range(tot_rows+1):
+    for row in range(tot_rows):
         grid.append([])
         for col in range(tot_rows+1):
             node = Node((WIDTH//tot_rows)*col, (WIDTH//tot_rows)*row, row+1, col+1, tot_rows)
@@ -109,25 +123,38 @@ def draw_grid(grid):
             node.reset()
 
 
-
-def main(tot_rows):
+def main(tot_rows, user = "Guest"):
     grid = make_grid(tot_rows)
     apple = Apple(grid)
     snake = Snake(20, 20)
+    length = 3
+    old_time = pg.time.get_ticks()
+
+    info_div = Info_bar(0, WIDTH-(WIDTH//tot_rows), WHITE, length, user)
+
     run = True
 
     while run:
         draw_grid(grid)
         apple.draw(grid)
-        snake.move(grid, 30, pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT)
-        if snake.head[0] < 0 or snake.head[0] == tot_rows+1 or snake.head[1] < 0 or snake.head[1] == tot_rows+1:
+
+        new_time = pg.time.get_ticks()
+        if abs(old_time - new_time) > 100:
+            old_time = pg.time.get_ticks()
+            snake.move(pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT)
+
+        if snake.head[0] < 0 or snake.head[0] == tot_rows-1 or snake.head[1] < 0 or snake.head[1] == tot_rows:
             run = False
+        
+        snake.draw(grid)
 
         if snake.head == [apple.row, apple.col]:
             snake.limbs.append([snake.limbs[-1][0], snake.limbs[-1][1]])
             apple = Apple(grid)
-
-        pg.time.wait(70)
+            length += 1
+        
+        font.render_to(SCREEN, (10, 10), f"Length: {length}", WHITE)
+        info_div.draw()
 
         if pg.display.get_init():
             pg.display.update()
@@ -136,10 +163,10 @@ def main(tot_rows):
             if event.type == pg.QUIT:
                 pg.quit()
 
+
+
 if "__main__" == __name__:
     run = True
     while run:
-        try:
-            main(25)
-        except pg.error:
-            run = False
+        try: main(25)
+        except pg.error: run = False
