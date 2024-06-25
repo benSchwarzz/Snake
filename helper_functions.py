@@ -33,3 +33,12 @@ def draw_grid(grid):
         for node in row:
             node.draw()
             node.reset()
+
+def log_top_scores(file_path, score):
+    with open(file_path, "r") as file:
+        top_scores = json.load(file)
+
+    if top_scores["high_score"] < score:
+        top_scores["high_score"] = score
+        with open(file_path, "w") as file:
+            json.dump(top_scores, file, indent=2)
