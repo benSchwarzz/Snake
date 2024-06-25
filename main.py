@@ -1,6 +1,7 @@
 import pygame as pg
 import pygame.freetype
-import classes, helper_functions
+import classes
+import helper_functions as hp
 import copy, random, json
 
 pg.init()
@@ -11,25 +12,15 @@ font = pygame.freetype.Font(None, 20)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREY = (100, 100, 100)
 GREEN = (0, 235, 140)
 RED = (255, 80, 40)
 RED2 = (255, 0, 0)
 
 
-def log_top_scores(file_path, score):
-    with open(file_path, "r") as file:
-        top_scores = json.load(file)
-
-    if top_scores["high_score"] < score:
-        top_scores["high_score"] = score
-        with open(file_path, "w") as file:
-            json.dump(top_scores, file, indent=2)
-
-
-
 
 def main(tot_rows, user = "Guest"):
-    grid = helper_functions.make_grid(tot_rows)
+    grid = hp.make_grid(tot_rows)
     apple = classes.Apple(grid)
     snake = classes.Snake(20, 20)
     length = 3
@@ -40,7 +31,7 @@ def main(tot_rows, user = "Guest"):
     run = True
 
     while run:
-        helper_functions.draw_grid(grid)
+        hp.draw_grid(grid)
         apple.draw(grid)
 
         new_time = pg.time.get_ticks()
