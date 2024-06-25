@@ -50,13 +50,13 @@ def main(tot_rows, user = "Guest"):
 
         if snake.head[0] < 0 or snake.head[0] == tot_rows-1 or snake.head[1] < 0 or snake.head[1] == tot_rows:
             pg.time.wait(2000)
-            log_top_scores("/home/brbs615/Snake/Snake/top_scores.json", length)
+            log_top_scores("/Users/brbs6/Snake/top_scores.json", length)
             run = False
         else:
              for limb in range(1, len(snake.limbs)):
                   if snake.head == [snake.limbs[limb][0], snake.limbs[limb][1]]:
                        pg.time.wait(2000)
-                       log_top_scores("/home/brbs615/Snake/Snake/top_scores.json", length)
+                       log_top_scores("/Users/brbs6/Snake/top_scores.json", length)
                        run = False
         
         snake.draw(grid)
